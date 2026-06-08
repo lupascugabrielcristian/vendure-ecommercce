@@ -1,0 +1,17 @@
+{
+  "name": "ecommerce-store",
+  "version": "1.0.0",
+  "description": "Sample ecommerce website using Vendure framework",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run -w apps/server dev & npm run -w apps/storefront dev",
+    "build": "npm run -w apps/server build && npm run -w apps/storefront build",
+    "start": "npm run -w apps/server start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
