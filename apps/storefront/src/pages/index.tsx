@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import ProductCard from '../components/ProductCard';
-import Cart from '../components/Cart';
+import { useCart } from '../context/CartContext';
 
 interface Product {
   id: string;
@@ -12,12 +13,17 @@ interface Product {
 }
 
 export default function Home() {
+  const router = useRouter();
+  const { cart, addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<Product[]>([]);
-  const [showCart, setShowCart] = useState(false);
+
+  const handleGoHome = () => {
+    if (router.pathname !== '/') {
+      router.push('/');
+    }
+  };
 
   useEffect(() => {
-    // Initialize with sample products
     const sampleProducts: Product[] = [
       {
         id: '1',
@@ -65,16 +71,6 @@ export default function Home() {
     setProducts(sampleProducts);
   }, []);
 
-  const addToCart = (product: Product) => {
-    setCart([...cart, product]);
-  };
-
-  const removeFromCart = (index: number) => {
-    setCart(cart.filter((_, i) => i !== index));
-  };
-
-  const totalPrice = cart.reduce((sum, product) => sum + product.price, 0);
-
   return (
     <>
       <Head>
@@ -86,10 +82,10 @@ export default function Home() {
       <div className="container">
         <header className="header">
           <div className="header-content">
-            <h1>🛍️ TechHub Store</h1>
-            <button 
+            <h1 onClick={handleGoHome} style={{ cursor: 'pointer' }}>🛍️ TechHub Store</h1>
+            <button
               className="cart-button"
-              onClick={() => setShowCart(!showCart)}
+              onClick={() => router.push('/cart')}
             >
               🛒 Cart ({cart.length})
             </button>
@@ -97,28 +93,22 @@ export default function Home() {
         </header>
 
         <main className="main">
-          {showCart ? (
-            <Cart items={cart} onRemove={removeFromCart} total={totalPrice} />
-          ) : (
-            <>
-              <section className="hero">
-                <h2>Welcome to TechHub</h2>
-                <p>Discover premium tech products at unbeatable prices</p>
-              </section>
+          <section className="hero">
+            <h2>Welcome to TechHub</h2>
+            <p>Discover premium tech products at unbeatable prices</p>
+          </section>
 
-              <section className="products">
-                <div className="products-grid">
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={() => addToCart(product)}
-                    />
-                  ))}
-                </div>
-              </section>
-            </>
-          )}
+          <section className="products">
+            <div className="products-grid">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={() => addToCart(product)}
+                />
+              ))}
+            </div>
+          </section>
         </main>
 
         <footer className="footer">
